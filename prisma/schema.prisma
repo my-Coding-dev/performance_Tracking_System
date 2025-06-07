@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// Performance-related settings
+model PerformanceMetric {
+  id          String   @id @default(uuid()) @map("_id")
+  userId      String
+  metricName  String
+  metricValue Float
+  timestamp   DateTime @default(now())
+  metadata    Json?    @default("{}")
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([metricName])
+  @@index([timestamp])
+  @@index([userId, metricName])
+  @@index([userId, timestamp])
+}
+
+model User {
+  id             String             @id @default(uuid()) @map("_id")
+  email          String             @unique
+  name           String?
+  role           String             @default("user")
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  lastLoginAt    DateTime?
+  status         String             @default("active")
+  
+  metrics        PerformanceMetric[]
+  teams          TeamMember[]
+  
+  @@index([role])
+  @@index([status])
+}
+
+model Team {
+  id          String       @id @default(uuid()) @map("_id")
+  name        String
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  members     TeamMember[]
+  
+  @@index([name])
+}
+
+model TeamMember {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  teamId    String
+  role      String   @default("member")
+  joinedAt  DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+  @@index([role])
+}
+
+// Cache-related model for storing system-wide cache keys
+model CacheRegistry {
+  id          String   @id @default(uuid()) @map("_id")  
+  cacheKey    String   @unique
+  entity      String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expiresAt   DateTime?
+  
+  @@index([entity])
+  @@index([expiresAt])
+}

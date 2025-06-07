@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Dashboard</title>
+  <!-- Chart.js for visualizations (local) -->
+  <script src="vendor/chart.min.js"></script>
+  <!-- Socket.IO client library (local) -->
+  <script src="vendor/socket.io.min.js"></script>
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Performance Monitoring Dashboard</h1>
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="label">Server Uptime:</span>
+        <span id="server-uptime" class="value">-</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Database:</span>
+        <span id="db-status" class="value status-indicator">-</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Cache:</span>
+        <span id="cache-status" class="value status-indicator">-</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Memory Usage:</span>
+        <span id="memory-usage" class="value">-</span>
+      </div>
+      <div class="status-item">
+        <span class="label">CPU Load:</span>
+        <span id="cpu-load" class="value">-</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- API Request Terminal Display -->
+    <section class="terminal-section">
+      <div class="terminal-header">
+        <h2>API Request Monitor</h2>
+        <div class="terminal-controls">
+          <span class="api-stats">
+            <span class="label">Requests:</span>
+            <span id="api-total-requests" class="value">0</span>
+          </span>
+          <span class="api-stats">
+            <span class="label">Req/sec:</span>
+            <span id="api-requests-per-second" class="value">0</span>
+          </span>
+          <span class="api-stats">
+            <span class="label">Avg Time:</span>
+            <span id="api-avg-response-time" class="value">0ms</span>
+          </span>
+          <button id="clear-terminal" class="terminal-btn">Clear</button>
+          <button id="pause-terminal" class="terminal-btn">Pause</button>
+        </div>
+      </div>
+      <div class="terminal-container">
+        <div id="api-terminal" class="terminal">
+          <!-- Terminal lines will be added here -->
+          <div class="terminal-welcome">
+            <div class="terminal-line">
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-text">API Request Monitor initialized. Waiting for requests...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="request-details-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>API Request Details</h3>
+            <span class="modal-close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div class="request-details-container">
+              <div class="request-section">
+                <h4>Request</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">ID:</span>
+                    <span id="detail-id" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Method:</span>
+                    <span id="detail-method" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">URL:</span>
+                    <span id="detail-url" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Time:</span>
+                    <span id="detail-time" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">IP:</span>
+                    <span id="detail-ip" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">User Agent:</span>
+                    <span id="detail-user-agent" class="detail-value">-</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="request-section">
+                <h4>Headers</h4>
+                <pre id="detail-headers" class="code-block">-</pre>
+              </div>
+              
+              <div class="request-section">
+                <h4>Query Parameters</h4>
+                <pre id="detail-query" class="code-block">-</pre>
+              </div>
+              
+              <div class="request-section">
+                <h4>Body</h4>
+                <pre id="detail-body" class="code-block">-</pre>
+              </div>
+              
+              <div class="request-section">
+                <h4>Response</h4>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span id="detail-status" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Time:</span>
+                    <span id="detail-response-time" class="detail-value">-</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Size:</span>
+                    <span id="detail-response-size" class="detail-value">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <!-- Database Metrics -->
+      <div class="dashboard-card">
+        <h2>Database Performance</h2>
+        <div class="chart-container">
+          <canvas id="db-operations-chart"></canvas>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-label">Read Speed</span>
+            <span id="db-read-speed" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Write Speed</span>
+            <span id="db-write-speed" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg Read Time</span>
+            <span id="db-read-time" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg Write Time</span>
+            <span id="db-write-time" class="metric-value">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cache Metrics -->
+      <div class="dashboard-card">
+        <h2>Cache Performance</h2>
+        <div class="chart-container">
+          <canvas id="cache-hit-ratio-chart"></canvas>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-label">Hits</span>
+            <span id="cache-hits" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Misses</span>
+            <span id="cache-misses" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Hit Ratio</span>
+            <span id="cache-hit-ratio" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Keys</span>
+            <span id="cache-keys" class="metric-value">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Request Metrics -->
+      <div class="dashboard-card">
+        <h2>API Request Metrics</h2>
+        <div class="chart-container">
+          <canvas id="api-requests-chart"></canvas>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-label">Total Requests</span>
+            <span id="api-total" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Requests/Min</span>
+            <span id="api-rpm" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Success Rate</span>
+            <span id="api-success-rate" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Avg Response</span>
+            <span id="api-avg-time" class="metric-value">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Resources -->
+      <div class="dashboard-card">
+        <h2>System Resources</h2>
+        <div class="chart-container">
+          <canvas id="system-resources-chart"></canvas>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <span class="metric-label">CPU Load</span>
+            <span id="system-cpu-load" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Memory Used</span>
+            <span id="system-memory-used" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Platform</span>
+            <span id="system-platform" class="metric-value">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Hostname</span>
+            <span id="system-hostname" class="metric-value">-</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Performance Tracking System - Real-time Monitoring Dashboard</p>
+  </footer>
+
+  <!-- Custom JavaScript -->
+  <script src="dashboard.js"></script>
+</body>
+</html> 
