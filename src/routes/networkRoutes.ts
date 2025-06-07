@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
 import config from '../config/config';
-import { AuthRequest } from '../middlewares/auth';
+import authMiddleware from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -34,7 +34,7 @@ router.get('/status', (_req: Request, res: Response): void => {
  * @desc    Get network traffic summary
  * @access  Admin
  */
-router.get('/summary', async (_req: AuthRequest, res: Response): Promise<void> => {
+router.get('/summary', async (_req: Request, res: Response): Promise<void> => {
   // This would normally be protected by auth middleware
   // For now we'll simulate admin access
   // if (!req.user || req.user.role !== 'admin') {

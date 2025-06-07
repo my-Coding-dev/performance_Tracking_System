@@ -54,6 +54,13 @@ export const CACHE_TTL: Record<CacheStrategy, number> = {
   [CacheStrategy.PERMANENT]: -1, // No expiration
 };
 
+// Type safe filter helpers for metadata fields
+export const JsonFilters = {
+  contains: (value: string) => ({ path: ['$'], string_contains: value }),
+  equals: (path: string[], value: any) => ({ path, equals: value }),
+  exists: (path: string[]) => ({ path, not: null })
+};
+
 /**
  * Cache performance metrics
  */
@@ -383,7 +390,14 @@ class CacheClient {
       this.metrics.hits++;
       this.metrics.bytesRead += Buffer.byteLength(value);
       
-      return JSON.parse(value) as T;
+      try {
+        // Try to parse as JSON
+        return JSON.parse(value) as T;
+      } catch (parseError) {
+        // If not valid JSON, return as-is if it's a string
+        // This handles the case where we store non-JSON data
+        return value as unknown as T;
+      }
     } catch (error) {
       this.metrics.errors++;
       logger.error(`Cache get error: ${key}`, error instanceof Error ? error : new Error(String(error)));
@@ -468,11 +482,19 @@ class CacheClient {
       
       keys.forEach((key, index) => {
         const value = values[index];
-        result[key] = value ? JSON.parse(value) as T : null;
-        
         if (value) {
+          try {
+            // Try to parse as JSON
+            result[key] = JSON.parse(value) as T;
+          } catch (parseError) {
+            // If not valid JSON, return as-is if it's a string
+            result[key] = value as unknown as T;
+          }
+          
           hitCount++;
           totalBytesRead += Buffer.byteLength(value);
+        } else {
+          result[key] = null;
         }
       });
       

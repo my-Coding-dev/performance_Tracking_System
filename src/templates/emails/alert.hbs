@@ -1,0 +1,18 @@
+<h2>{{subject}}</h2>
+
+<div class="alert {{#if critical}}alert-danger{{else}}alert-warning{{/if}}">
+  <strong>{{#if critical}}CRITICAL ALERT{{else}}SYSTEM ALERT{{/if}}</strong>
+</div>
+
+<p>The system has detected an issue that requires attention:</p>
+
+<pre>{{message}}</pre>
+
+<p><strong>Time:</strong> {{timestamp}}</p>
+<p><strong>Environment:</strong> {{environment}}</p>
+
+<p>
+  Please investigate this issue as {{#if critical}}soon as possible{{else}}time permits{{/if}}.
+</p>
+
+<a href="https://dashboard.performance-tracking.com/alerts" class="btn">View Alerts Dashboard</a> 

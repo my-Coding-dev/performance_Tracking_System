@@ -15,6 +15,29 @@ const UPDATE_INTERVALS = {
   SLOW: 30000   // 30 seconds for system metrics that don't change frequently
 };
 
+// Environment-aware CORS origins
+const getCorsOrigins = () => {
+  const origins = [];
+  
+  // Always include localhost for development
+  origins.push('http://localhost:3000', 'http://localhost:8080', 'http://127.0.0.1:3000');
+  
+  // Add production domains
+  if (process.env.NODE_ENV === 'production') {
+    // Add your production domains here
+    if (process.env.FRONTEND_URL) {
+      origins.push(process.env.FRONTEND_URL);
+    }
+    
+    // Add specific production domains if known
+    if (process.env.CORS_DOMAINS) {
+      origins.push(...process.env.CORS_DOMAINS.split(','));
+    }
+  }
+  
+  return origins;
+};
+
 /**
  * Available metric types for subscription
  */
@@ -55,8 +78,9 @@ class WebSocketService {
     try {
       this.io = new SocketServer(server, {
         cors: {
-          origin: '*', // In production, limit this to your domain
-          methods: ['GET', 'POST']
+          origin: getCorsOrigins(),
+          methods: ['GET', 'POST'],
+          credentials: true
         },
         transports: ['websocket', 'polling']
       });
@@ -65,7 +89,7 @@ class WebSocketService {
       this.setupApiTrackingListeners();
       this.startMetricCollectors();
       
-      logger.info('WebSocket server initialized');
+      logger.info('WebSocket server initialized with CORS for: ' + getCorsOrigins().join(', '));
     } catch (error) {
       logger.error('Failed to initialize WebSocket server', 
         error instanceof Error ? error : new Error(String(error)));

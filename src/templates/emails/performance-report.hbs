@@ -1,0 +1,128 @@
+<h2>Performance System Report</h2>
+
+<div class="alert alert-info">
+  <strong>Performance Metrics Report</strong>
+</div>
+
+<p>Hello {{recipient}},</p>
+
+<p>Here is your requested performance report for the system:</p>
+
+<h3>Database Performance</h3>
+<table>
+  <tr>
+    <th>Metric</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>Average Query Time</td>
+    <td>{{database.avgQueryTime}} ms</td>
+  </tr>
+  <tr>
+    <td>Queries/Second</td>
+    <td>{{database.queriesPerSecond}}</td>
+  </tr>
+  <tr>
+    <td>Cache Hit Rate</td>
+    <td>{{database.cacheHitRate}}%</td>
+  </tr>
+  <tr>
+    <td>Connection Status</td>
+    <td>
+      {{#if database.isConnected}}
+        <span style="color: green;">Connected</span>
+      {{else}}
+        <span style="color: red;">Disconnected</span>
+      {{/if}}
+    </td>
+  </tr>
+</table>
+
+<h3>Cache Performance</h3>
+<table>
+  <tr>
+    <th>Metric</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>Hit Rate</td>
+    <td>{{cache.hitRate}}%</td>
+  </tr>
+  <tr>
+    <td>Latency</td>
+    <td>{{cache.latency}} ms</td>
+  </tr>
+  <tr>
+    <td>Memory Usage</td>
+    <td>{{cache.memoryUsage}}</td>
+  </tr>
+  <tr>
+    <td>Connection Status</td>
+    <td>
+      {{#if cache.isConnected}}
+        <span style="color: green;">Connected</span>
+      {{else}}
+        <span style="color: red;">Disconnected</span>
+      {{/if}}
+    </td>
+  </tr>
+</table>
+
+<h3>API Performance</h3>
+<table>
+  <tr>
+    <th>Metric</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>Requests/Second</td>
+    <td>{{api.requestsPerSecond}}</td>
+  </tr>
+  <tr>
+    <td>Average Response Time</td>
+    <td>{{api.avgResponseTime}} ms</td>
+  </tr>
+  <tr>
+    <td>Success Rate</td>
+    <td>{{api.successRate}}%</td>
+  </tr>
+  <tr>
+    <td>Error Rate</td>
+    <td>{{api.errorRate}}%</td>
+  </tr>
+</table>
+
+<h3>System Resources</h3>
+<table>
+  <tr>
+    <th>Metric</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>CPU Usage</td>
+    <td>{{system.cpuUsage}}%</td>
+  </tr>
+  <tr>
+    <td>Memory Usage</td>
+    <td>{{system.memoryUsage}}%</td>
+  </tr>
+  <tr>
+    <td>Uptime</td>
+    <td>{{system.uptime}}</td>
+  </tr>
+</table>
+
+{{#if recommendations.length}}
+<h3>Recommendations</h3>
+<ul>
+  {{#each recommendations}}
+    <li>{{this}}</li>
+  {{/each}}
+</ul>
+{{/if}}
+
+<p>
+  <a href="https://dashboard.performance-tracking.com" class="btn">View Full Dashboard</a>
+</p>
+
+<p>Report generated at: {{timestamp}}</p> 

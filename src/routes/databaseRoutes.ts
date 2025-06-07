@@ -2,8 +2,7 @@ import { Router, Request, Response } from 'express';
 import db from '../utils/database';
 import cacheClient from '../utils/cache';
 import config from '../config/config';
-import { authenticate, authorize } from '../middlewares/auth';
-import { AuthRequest } from '../middlewares/auth';
+import authMiddleware from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -83,7 +82,7 @@ router.get('/cache/status', async (_req: Request, res: Response): Promise<void> 
  * @desc    Invalidate cache for a pattern
  * @access  Admin
  */
-router.post('/cache/invalidate', authenticate, authorize(['admin']), async (req: AuthRequest, res: Response): Promise<void> => {
+router.post('/cache/invalidate', authMiddleware.authenticate, authMiddleware.authorize('admin'), async (req: Request, res: Response): Promise<void> => {
   try {
     const { pattern } = req.body;
     
@@ -117,7 +116,7 @@ router.post('/cache/invalidate', authenticate, authorize(['admin']), async (req:
  * @desc    Clear all cache
  * @access  Admin
  */
-router.delete('/cache/clear', authenticate, authorize(['admin']), async (_req: AuthRequest, res: Response): Promise<void> => {
+router.delete('/cache/clear', authMiddleware.authenticate, authMiddleware.authorize('admin'), async (_req: Request, res: Response): Promise<void> => {
   try {
     await db.invalidateCache('*');
     
@@ -142,7 +141,7 @@ router.delete('/cache/clear', authenticate, authorize(['admin']), async (_req: A
  * @desc    Get detailed database performance metrics
  * @access  Admin
  */
-router.get('/performance', async (_req: AuthRequest, res: Response): Promise<void> => {
+router.get('/performance', async (_req: Request, res: Response): Promise<void> => {
   try {
     // Get full performance data from database
     const dbStats = db.getStats();

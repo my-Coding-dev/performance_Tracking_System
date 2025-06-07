@@ -46,7 +46,28 @@ interface CacheConfig {
   };
 }
 
+interface EmailConfig {
+  enabled: boolean;
+  host: string;
+  port: number;
+  secure: boolean;
+  auth: {
+    user: string;
+    pass: string;
+  };
+  defaultFrom: string;
+  tls: {
+    rejectUnauthorized: boolean;
+  };
+  alerts: {
+    enabled: boolean;
+    recipients: string[];
+    criticalRecipients: string[];
+  };
+}
+
 interface Config {
+  appName: string;
   nodeEnv: string;
   port: number;
   corsOrigin: string;
@@ -61,9 +82,11 @@ interface Config {
   networkMonitor: NetworkMonitorConfig;
   database: DatabaseConfig;
   cache: CacheConfig;
+  email: EmailConfig;
 }
 
 const config: Config = {
+  appName: process.env.APP_NAME || 'Performance Tracking System',
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '5000', 10),
   corsOrigin: process.env.CORS_ORIGIN || '*',
@@ -113,6 +136,25 @@ const config: Config = {
       queries: process.env.CACHE_STRATEGY_QUERIES || 'short',
       aggregations: process.env.CACHE_STRATEGY_AGGREGATIONS || 'medium',
       userSessions: process.env.CACHE_STRATEGY_USER_SESSIONS || 'long'
+    }
+  },
+  email: {
+    enabled: process.env.EMAIL_ENABLED === 'true',
+    host: process.env.EMAIL_HOST || '',
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+      user: process.env.EMAIL_USER || '',
+      pass: process.env.EMAIL_PASSWORD || ''
+    },
+    defaultFrom: process.env.EMAIL_FROM || 'noreply@performance-tracking.com',
+    tls: {
+      rejectUnauthorized: process.env.EMAIL_TLS_REJECT_UNAUTHORIZED !== 'false'
+    },
+    alerts: {
+      enabled: process.env.EMAIL_ALERTS_ENABLED === 'true',
+      recipients: (process.env.EMAIL_ALERT_RECIPIENTS || '').split(',').filter(Boolean),
+      criticalRecipients: (process.env.EMAIL_ALERT_CRITICAL_RECIPIENTS || '').split(',').filter(Boolean)
     }
   }
 };
