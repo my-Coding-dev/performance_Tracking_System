@@ -88,7 +88,7 @@ interface Config {
 const config: Config = {
   appName: process.env.APP_NAME || 'Performance Tracking System',
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '5000', 10),
+  port: parseInt(process.env.PORT || '3000', 10),
   corsOrigin: process.env.CORS_ORIGIN || '*',
   logLevel: process.env.LOG_LEVEL || 'info',
   apiVersion: process.env.API_VERSION || 'v1',
