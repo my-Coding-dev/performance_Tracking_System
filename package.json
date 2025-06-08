@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node dist/Server.js",
     "dev": "npx prisma generate && nodemon --exec ts-node src/Server.ts",
-    "build": "tsc",
+    "build": "npx prisma generate && tsc",
+    "postinstall": "prisma generate",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "jest",

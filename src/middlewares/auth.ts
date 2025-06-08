@@ -4,7 +4,7 @@ import { unauthorized } from '../utils/errorHandler';
 // Extended Request interface to include user
 export interface AuthRequest extends Request {
   user?: {
-    id: string;
+    userId: string;
     email: string;
     role: string;
   };
@@ -29,7 +29,7 @@ export const authenticate = (req: AuthRequest, _res: Response, next: NextFunctio
     
     // For demonstration purposes, we're just setting a placeholder user
     req.user = {
-      id: 'placeholder-id',
+      userId: 'placeholder-id',
       email: 'placeholder@example.com',
       role: 'user'
     };
