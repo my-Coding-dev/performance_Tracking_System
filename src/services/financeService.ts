@@ -620,7 +620,7 @@ class FinanceService {
       }
 
       // Check if account is changing and validate new account
-      let newAccount = null;
+      let newAccount: Account | null = null;
       if (data.accountId && data.accountId !== transaction.accountId) {
         newAccount = await this.prisma.account.findUnique({
           where: { id: data.accountId }
@@ -637,7 +637,7 @@ class FinanceService {
       }
 
       // Check if it's a transfer and validate destination account
-      let newDestinationAccount = null;
+      let newDestinationAccount: Account | null = null;
       if (data.type === TransactionType.TRANSFER && data.transferToId && data.transferToId !== transaction.transferToId) {
         newDestinationAccount = await this.prisma.account.findUnique({
           where: { id: data.transferToId }

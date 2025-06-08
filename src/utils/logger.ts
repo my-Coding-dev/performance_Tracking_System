@@ -141,7 +141,7 @@ class Logger {
       }
       
       // Check alert thresholds
-      const alerts = [];
+      const alerts: string[] = [];
       if (logEntry.responseTimeMs > config.networkMonitor.alertThresholds.responseTimeMs) {
         alerts.push(`High response time: ${logEntry.responseTimeMs}ms`);
       }

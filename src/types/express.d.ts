@@ -1,9 +1,9 @@
-import { Request } from 'express';
+import 'express';
 
 // Extend Express Request interface
 declare global {
   namespace Express {
-    export interface Request {
+    interface Request {
       user?: {
         userId: string;
         email: string;
@@ -14,14 +14,10 @@ declare global {
 }
 
 // Define AuthenticatedRequest interface with all needed properties
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Express.Request {
   user: {
     userId: string;
     email: string;
     role: string;
   };
-  body: any;
-  params: any;
-  query: any;
-  header(name: string): string | undefined;
 } 

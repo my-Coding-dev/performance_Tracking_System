@@ -17,7 +17,7 @@ const UPDATE_INTERVALS = {
 
 // Environment-aware CORS origins
 const getCorsOrigins = () => {
-  const origins = [];
+  const origins: string[] = [];
   
   // Always include localhost for development
   origins.push('http://localhost:3000', 'http://localhost:8080', 'http://127.0.0.1:3000');
