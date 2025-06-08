@@ -2,15 +2,7 @@ import { Request, Response } from 'express';
 import analyticsService from '../services/analyticsService';
 import logger from '../utils/logger';
 import { AppError } from '../utils/errors';
-
-// Extend Express Request type to include user
-interface AuthenticatedRequest extends Request {
-  user: {
-    userId: string;
-    email: string;
-    role: string;
-  };
-}
+import { AuthenticatedRequest } from '../types/custom';
 
 class AnalyticsController {
   /**

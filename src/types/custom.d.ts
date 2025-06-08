@@ -1,6 +1,4 @@
-// This file is intentionally left empty to prevent conflicts with the @types/express package
-
-import 'express';
+import { Request } from 'express';
 
 // Extend Express Request interface
 declare global {
@@ -16,10 +14,13 @@ declare global {
 }
 
 // Define AuthenticatedRequest interface with all needed properties
-export interface AuthenticatedRequest extends Express.Request {
+export interface AuthenticatedRequest extends Request {
   user: {
     userId: string;
     email: string;
     role: string;
   };
+  body: any;
+  params: any;
+  query: any;
 } 
