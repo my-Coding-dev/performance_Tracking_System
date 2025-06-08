@@ -674,7 +674,7 @@ class TaskService {
       const completionRate = total > 0 ? (completed / total) * 100 : 0;
 
       // Calculate average completion time
-      let averageCompletionTime = null;
+      let averageCompletionTime: number | null = null;
       if (completedTasks.length > 0) {
         const totalCompletionTime = completedTasks.reduce((sum, task) => {
           if (task.completedAt && task.createdAt) {

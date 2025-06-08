@@ -7,7 +7,7 @@
     "start": "node dist/Server.js",
     "dev": "npx prisma generate && nodemon --exec ts-node src/Server.ts",
     "build": "npx prisma generate && tsc",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && npm install --save-dev @types/express @types/morgan @types/compression @types/bcrypt @types/jsonwebtoken @types/speakeasy @types/nodemailer @types/nodemailer-express-handlebars @types/ua-parser-js @types/on-headers @types/on-finished",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "test": "jest",
